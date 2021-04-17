@@ -3,6 +3,7 @@ package reversi;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
+import java.awt.event.*;
 
 /**
  * This class deals with all the GUI interface
@@ -10,11 +11,13 @@ import java.awt.*;
  */
 public class GUI {
     JFrame player1Frame, player2Frame;
+
     JFrame [] arr = new JFrame[2];
     JPanel player1Panel, player2Panel, title1, title2;
     JButton greedyAI1, greedyAI2;
     GameCell[] player1Label = new GameCell[64];
     GameCell[] player2Label =  new GameCell[64];
+    static GameState state = new GameState();
 
     public GUI(){
         player1Frame = new JFrame("Player 1");
@@ -37,14 +40,19 @@ public class GUI {
         panel = new JPanel();
         title = new JPanel();
         AI = new JButton("Greedy AI");
+
+        //setting up the main frame
         frame.setDefaultCloseOperation(3);
         frame.setLayout(new BorderLayout());
         frame.getContentPane().add(panel, BorderLayout.CENTER);
         frame.getContentPane().add(title, BorderLayout.NORTH);
         frame.getContentPane().add(AI, BorderLayout.SOUTH);
+
+        //setting up the panels
         title.setLayout(new FlowLayout());
         panel.setLayout(new GridLayout(8, 8));
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
         //setting up (initialising) the  the GameCell array
         for (int i = 0; i < 64 ; i++) {
             labels[i] = new GameCell(i / 8, i % 8);
@@ -68,9 +76,82 @@ public class GUI {
         frame.setVisible(true);
     }
 
+    //returns a array of the main frames
     public JFrame[] getFrames(){
         JFrame[] arr = {player1Frame, player2Frame};
         return arr;
+    }
+
+    /**
+     * Updates both of the main frames and the (x, y) co-ordinate
+     * labels to reflect the move made.
+     * @param yPos y position of the move made
+     * @param xPos x position of the move made
+     * @param newStatus the new status that the the label will need
+     *                  to reflect
+     */
+    public void updateFrame(int yPos, int xPos,  int newStatus){
+        player1Label[yPos * 8 + xPos].update(newStatus);
+        player2Label[63 - (yPos * 8 + xPos)].update(newStatus);
+        player1Frame.repaint();
+        player2Frame.repaint();
+
+    }
+
+    /**
+     * Inner class for the cells of the game
+     */
+    public class GameCell extends JButton implements ActionListener {
+        /**
+         * The variable hold the information about the cell;
+         * which player posses the cell if any.
+         * <ul>
+         * <li>1 - White player</li>
+         * <li>0 - Empty Cell</li>
+         * <li>-1 - Black Player</li>
+         * </ul>
+         */
+        int status;
+
+        int neighbour;
+        int xPos, yPos;
+
+        /**
+         * The parameterised constructor which initialises the GameCell
+         * @param yPos y position of the cell
+         * @param xPos x position of the cell
+         */
+        public GameCell(int yPos, int xPos) {
+            this.xPos = xPos;
+            this.yPos = yPos;
+            this.setPreferredSize(new Dimension(40, 40));
+            this.setBackground(Color.green);
+            this.setOpaque(true);
+            this.status = 0;
+            this.addActionListener(this);
+        }
+
+        /**
+         * Updates this when a move is made to reflect the same
+         * @param newStatus the new status to reflect the move made
+         */
+        public void update(int newStatus) {
+            if (status != newStatus) {
+                if (newStatus==1){
+                    this.setText("hello");
+                }
+            }
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            state.update(xPos, yPos, 1);
+            this.update(1);
+            state.print();
+            updateFrame(yPos, xPos, 1);
+
+
+        }
     }
 }
 

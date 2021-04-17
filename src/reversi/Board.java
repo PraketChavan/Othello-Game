@@ -9,12 +9,7 @@ import java.awt.event.*;
  * game. Includes information regarding the status of
  * each cell and the current score.</h2>
  */
-public class Board extends MouseAdapter {
-    /**
-     * Holds the info of the current status of the game
-     */
-    int[][] gameState = new int[8][8];
-
+public class Board {
     /**player1 and player2 are the object references to the
      * two board gui */
     JFrame player1, player2;
@@ -30,19 +25,13 @@ public class Board extends MouseAdapter {
         this.player1 = player1;
         this.player2 = player2;
 
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++)
-                this.gameState[i][j] = 0;
-        }
+
         Component arr [] = player1.getComponents();
-        System.out.println(arr);
+        for (int i = 0; i < arr.length; i++) {
+            System.out.println(arr[i]);
+        }
     }
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        GameCell cell = (GameCell)e.getSource();
-        System.out.println(cell.xPos + " " + cell.yPos);
-    }
 
     public void update(int moveX, int moveY, int player){
 
