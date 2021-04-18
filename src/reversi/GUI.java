@@ -91,8 +91,15 @@ public class GUI {
      *                  to reflect
      */
     public void updateFrame(int yPos, int xPos,  int newStatus){
-        player1Label[yPos * 8 + xPos].update(newStatus);
-        player2Label[63 - (yPos * 8 + xPos)].update(newStatus);
+        if(newStatus == 1) {
+            player1Label[yPos * 8 + xPos].update(newStatus);
+            player2Label[63 - (yPos * 8 + xPos)].update(newStatus);
+        }
+        else{
+            player2Label[yPos * 8 + xPos].update(newStatus);
+            player1Label[63 - (yPos * 8 + xPos)].update(newStatus);
+        }
+
         player1Frame.repaint();
         player2Frame.repaint();
 
@@ -136,21 +143,23 @@ public class GUI {
          * @param newStatus the new status to reflect the move made
          */
         public void update(int newStatus) {
+            //use paint component
             if (status != newStatus) {
                 if (newStatus==1){
                     this.setText("hello");
                 }
+                if (newStatus==-1)
+                    this.setText("World");
             }
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            state.update(xPos, yPos, 1);
+            state.update(xPos, yPos, Game.currentPlayer);
             this.update(1);
             state.print();
-            updateFrame(yPos, xPos, 1);
-
-
+            updateFrame(yPos, xPos, Game.currentPlayer);
+            Game.currentPlayer = Game.currentPlayer==1 ? -1 : 1;
         }
     }
 }
