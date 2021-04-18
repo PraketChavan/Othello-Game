@@ -156,30 +156,30 @@ public class GUI {
          */
         public void update(int newStatus) {
                 if (status != newStatus) {
-                    if (newStatus == 1) {
-                        this.setText("Hello");
-                        //this.paintComponent(this.getGraphics());
-                    }
-                    if (newStatus == -1){
-                        this.setText("world");
-//                        this.paintComponent(this.getGraphics());
-
-                    }
+                    this.status = newStatus;
+                    this.paintComponent(getGraphics());
                 }
-                this.repaint();
         }
 
         @Override
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
-            if (this.status != 0){
-                g.setColor(Color.BLACK);
-                g.fillOval(0, 0, getWidth() - 1, getHeight() - 1);
+            if (this.status != 0 ){
+                int x = getWidth()/2;
+                int y = getHeight()/2;
+                int r = getWidth()-15;
+                if (this.status == 1) {
+                    g.setColor(Color.WHITE);
+                    g.fillOval(x-(r/2), y-(r/2), r, r);
+                    g.setColor(Color.BLACK);
+                }
+                else {
+                    g.setColor(Color.BLACK);
+                    g.fillOval(x-(r/2), y-(r/2), r, r);
+                    g.setColor(Color.WHITE);
+                }
+                g.fillOval(x-((r-2)/2), y-((r-2)/2), r - 2, r - 2);
             }
-//            if(this.status == 0){
-//                g.setColor(Color.red);
-//                g.fillOval(0, 0, getWidth()-1, getHeight()-1);
-//            }
         }
 
         @Override
