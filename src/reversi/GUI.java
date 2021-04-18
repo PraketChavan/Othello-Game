@@ -15,8 +15,8 @@ public class GUI {
     JFrame [] arr = new JFrame[2];
     JPanel player1Panel, player2Panel, title1, title2;
     JButton greedyAI1, greedyAI2;
-    GameCell[] player1Label = new GameCell[64];
-    GameCell[] player2Label =  new GameCell[64];
+    GameCell[][] player1Label = new GameCell[8][8];
+    GameCell[][] player2Label =  new GameCell[8][8];
     static GameState state = new GameState();
 
     public GUI(){
@@ -36,7 +36,7 @@ public class GUI {
      * @param labels the array that will hold the references to the GameCell objects
      *
      */
-    private void initialise(JFrame frame, JPanel panel, JPanel title, JButton AI,  GameCell[] labels, int player){
+    private void initialise(JFrame frame, JPanel panel, JPanel title, JButton AI,  GameCell[][] labels, int player){
         panel = new JPanel();
         title = new JPanel();
         AI = new JButton("Greedy AI");
@@ -54,22 +54,29 @@ public class GUI {
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         //setting up (initialising) the  the GameCell array
-        for (int i = 0; i < 64 ; i++) {
-            labels[i] = new GameCell(i / 8, i % 8, player);
+        for (int i = 0; i < 8 ; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (player == 1)
+                    labels[i][j] = new GameCell(j, i, player);
+                else
+                    labels[i][j] = new GameCell(7-j,7-i, player);
+            }
         }
 
         //adding the new GameCells to the panel and setting their borders to the appropriate
         //width and position
-        for (int i = 0; i < 64; i++) {
-            if(i < 7)
-                labels[i].setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.black));
-            else if (i == 7)
-                labels[i].setBorder(BorderFactory.createMatteBorder(0, 0,0,0, Color.black));
-                if(i % 8 == 0)
-                labels[i].setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.black));
-            else
-                labels[i].setBorder(BorderFactory.createMatteBorder(1, 1, 0, 0, Color.black));
-            panel.add(labels[i]);
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (i == 0)
+                    labels[i][j].setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.black));
+                else if (j == 7 && i == 0)
+                    labels[i][j].setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, Color.black));
+                if (j == 0)
+                    labels[i][j].setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.black));
+                else
+                    labels[i][j].setBorder(BorderFactory.createMatteBorder(1, 1, 0, 0, Color.black));
+                panel.add(labels[i][j]);
+            }
         }
 
         frame.pack();
@@ -92,12 +99,12 @@ public class GUI {
      */
     public void updateFrame(int yPos, int xPos,  int newStatus){
         if(newStatus == 1) {
-            player1Label[yPos * 8 + xPos].update(newStatus);
-            player2Label[63 - (yPos * 8 + xPos)].update(newStatus);
+            player1Label[xPos][yPos].update(newStatus);
+            player2Label[7 - xPos][7 - yPos].update(newStatus);
         }
         else{
-            player2Label[yPos * 8 + xPos].update(newStatus);
-            player1Label[63 - (yPos * 8 + xPos)].update(newStatus);
+            player2Label[7 - xPos][7 - yPos].update(newStatus);
+            player1Label[xPos][yPos].update(newStatus);
         }
 
         player1Frame.repaint();
@@ -148,22 +155,38 @@ public class GUI {
          * @param newStatus the new status (the player that played the turn) to reflect the move made
          */
         public void update(int newStatus) {
-            //use paint component
                 if (status != newStatus) {
                     if (newStatus == 1) {
-                        this.setText("hello");
+                        this.setText("Hello");
+                        //this.paintComponent(this.getGraphics());
                     }
-                    if (newStatus == -1)
-                        this.setText("World");
-                }
+                    if (newStatus == -1){
+                        this.setText("world");
+//                        this.paintComponent(this.getGraphics());
 
+                    }
+                }
+                this.repaint();
+        }
+
+        @Override
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (this.status != 0){
+                g.setColor(Color.BLACK);
+                g.fillOval(0, 0, getWidth() - 1, getHeight() - 1);
+            }
+//            if(this.status == 0){
+//                g.setColor(Color.red);
+//                g.fillOval(0, 0, getWidth()-1, getHeight()-1);
+//            }
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
             if (frame == Game.currentPlayer) {
-                state.update(xPos, yPos, Game.currentPlayer);
                 this.update(Game.currentPlayer);
+                state.update(xPos, yPos, Game.currentPlayer);
                 state.print();
                 updateFrame(yPos, xPos, Game.currentPlayer);
                 Game.currentPlayer = Game.currentPlayer == 1 ? -1 : 1;

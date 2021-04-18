@@ -28,6 +28,7 @@ public class GameState {
                 System.out.print(gameState[i][j] + "\t");
             System.out.println();
         }
+        System.out.println();
     }
 
 
