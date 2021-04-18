@@ -22,8 +22,8 @@ public class GUI {
     public GUI(){
         player1Frame = new JFrame("Player 1");
         player2Frame = new JFrame("Player 2");
-        initialise(player1Frame, player1Panel, title1, greedyAI1, player1Label);
-        initialise(player2Frame, player2Panel, title2, greedyAI2, player2Label);
+        initialise(player1Frame, player1Panel, title1, greedyAI1, player1Label, 1);
+        initialise(player2Frame, player2Panel, title2, greedyAI2, player2Label, -1);
     }
 
     /**
@@ -36,7 +36,7 @@ public class GUI {
      * @param labels the array that will hold the references to the GameCell objects
      *
      */
-    private void initialise(JFrame frame, JPanel panel, JPanel title, JButton AI,  GameCell[] labels){
+    private void initialise(JFrame frame, JPanel panel, JPanel title, JButton AI,  GameCell[] labels, int player){
         panel = new JPanel();
         title = new JPanel();
         AI = new JButton("Greedy AI");
@@ -55,7 +55,7 @@ public class GUI {
 
         //setting up (initialising) the  the GameCell array
         for (int i = 0; i < 64 ; i++) {
-            labels[i] = new GameCell(i / 8, i % 8);
+            labels[i] = new GameCell(i / 8, i % 8, player);
         }
 
         //adding the new GameCells to the panel and setting their borders to the appropriate
@@ -120,7 +120,11 @@ public class GUI {
          */
         int status;
 
-        int neighbour;
+        /**
+         * This member variable holds the player number which the cell belongs to
+         *
+         */
+        int frame;
         int xPos, yPos;
 
         /**
@@ -128,9 +132,10 @@ public class GUI {
          * @param yPos y position of the cell
          * @param xPos x position of the cell
          */
-        public GameCell(int yPos, int xPos) {
+        public GameCell(int yPos, int xPos, int player) {
             this.xPos = xPos;
             this.yPos = yPos;
+            this.frame = player;
             this.setPreferredSize(new Dimension(40, 40));
             this.setBackground(Color.green);
             this.setOpaque(true);
@@ -140,26 +145,29 @@ public class GUI {
 
         /**
          * Updates this when a move is made to reflect the same
-         * @param newStatus the new status to reflect the move made
+         * @param newStatus the new status (the player that played the turn) to reflect the move made
          */
         public void update(int newStatus) {
             //use paint component
-            if (status != newStatus) {
-                if (newStatus==1){
-                    this.setText("hello");
+                if (status != newStatus) {
+                    if (newStatus == 1) {
+                        this.setText("hello");
+                    }
+                    if (newStatus == -1)
+                        this.setText("World");
                 }
-                if (newStatus==-1)
-                    this.setText("World");
-            }
+
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            state.update(xPos, yPos, Game.currentPlayer);
-            this.update(1);
-            state.print();
-            updateFrame(yPos, xPos, Game.currentPlayer);
-            Game.currentPlayer = Game.currentPlayer==1 ? -1 : 1;
+            if (frame == Game.currentPlayer) {
+                state.update(xPos, yPos, Game.currentPlayer);
+                this.update(Game.currentPlayer);
+                state.print();
+                updateFrame(yPos, xPos, Game.currentPlayer);
+                Game.currentPlayer = Game.currentPlayer == 1 ? -1 : 1;
+            }
         }
     }
 }
