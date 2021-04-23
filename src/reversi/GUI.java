@@ -12,31 +12,36 @@ import java.awt.event.*;
 public class GUI {
     JFrame player1Frame, player2Frame;
 
-    JFrame [] arr = new JFrame[2];
+    JFrame[] arr = new JFrame[2];
     JPanel player1Panel, player2Panel, title1, title2;
     JButton greedyAI1, greedyAI2;
     GameCell[][] player1Label = new GameCell[8][8];
-    GameCell[][] player2Label =  new GameCell[8][8];
+    GameCell[][] player2Label = new GameCell[8][8];
     static GameState state = new GameState();
 
-    public GUI(){
+    //Stores the only GUI object;
+    static GUI currentGUI;
+
+    public GUI() {
         player1Frame = new JFrame("Player 1");
         player2Frame = new JFrame("Player 2");
         initialise(player1Frame, player1Panel, title1, greedyAI1, player1Label, 1);
         initialise(player2Frame, player2Panel, title2, greedyAI2, player2Label, -1);
+        currentGUI = this;
     }
+
 
     /**
      * Method to initialise the Board UI
-     * @param frame the frame that will be initialised
-     * @param panel the panel that will be added to the frame and will contain
-     *              Gamecells
-     * @param title the panel which contains the title/player info
-     * @param AI the button which will allow the user to let the AI play the move
-     * @param labels the array that will hold the references to the GameCell objects
      *
+     * @param frame  the frame that will be initialised
+     * @param panel  the panel that will be added to the frame and will contain
+     *               Gamecells
+     * @param title  the panel which contains the title/player info
+     * @param AI     the button which will allow the user to let the AI play the move
+     * @param labels the array that will hold the references to the GameCell objects
      */
-    private void initialise(JFrame frame, JPanel panel, JPanel title, JButton AI,  GameCell[][] labels, int player){
+    private void initialise(JFrame frame, JPanel panel, JPanel title, JButton AI, GameCell[][] labels, int player) {
         panel = new JPanel();
         title = new JPanel();
         AI = new JButton("Greedy AI");
@@ -54,12 +59,12 @@ public class GUI {
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         //setting up (initialising) the  the GameCell array
-        for (int i = 0; i < 8 ; i++) {
+        for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (player == 1)
                     labels[i][j] = new GameCell(j, i, player);
                 else
-                    labels[i][j] = new GameCell(7-j,7-i, player);
+                    labels[i][j] = new GameCell(7 - j, 7 - i, player);
             }
         }
 
@@ -84,7 +89,7 @@ public class GUI {
     }
 
     //returns a array of the main frames
-    public JFrame[] getFrames(){
+    public JFrame[] getFrames() {
         JFrame[] arr = {player1Frame, player2Frame};
         return arr;
     }
@@ -92,17 +97,17 @@ public class GUI {
     /**
      * Updates both of the main frames and the (x, y) co-ordinate
      * labels to reflect the move made.
-     * @param yPos y position of the move made
-     * @param xPos x position of the move made
+     *
+     * @param yPos      y position of the move made
+     * @param xPos      x position of the move made
      * @param newStatus the new status that the the label will need
      *                  to reflect
      */
-    public void updateFrame(int yPos, int xPos,  int newStatus){
-        if(newStatus == 1) {
+    public void updateFrame(int yPos, int xPos, int newStatus) {
+        if (newStatus == 1) {
             player1Label[xPos][yPos].update(newStatus);
             player2Label[7 - xPos][7 - yPos].update(newStatus);
-        }
-        else{
+        } else {
             player2Label[7 - xPos][7 - yPos].update(newStatus);
             player1Label[xPos][yPos].update(newStatus);
         }
@@ -129,13 +134,13 @@ public class GUI {
 
         /**
          * This member variable holds the player number which the cell belongs to
-         *
          */
         int frame;
         int xPos, yPos;
 
         /**
          * The parameterised constructor which initialises the GameCell
+         *
          * @param yPos y position of the cell
          * @param xPos x position of the cell
          */
@@ -147,40 +152,45 @@ public class GUI {
             this.setBackground(Color.green);
             this.setOpaque(true);
             this.status = 0;
-            this.addActionListener(this);
+            this.addActionListener(new MoveMade());
+        }
+
+        public GUI getGUI() {
+            return currentGUI;
         }
 
         /**
          * Updates this when a move is made to reflect the same
+         *
          * @param newStatus the new status (the player that played the turn) to reflect the move made
          */
         public void update(int newStatus) {
-                if (status != newStatus) {
-                    this.status = newStatus;
-                    this.paintComponent(getGraphics());
-                }
+            if (status != newStatus) {
+                this.status = newStatus;
+                this.paintComponent(getGraphics());
+            }
         }
 
         @Override
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
-            if (this.status != 0 ){
-                int x = getWidth()/2;
-                int y = getHeight()/2;
-                int r = getWidth()-15;
+            if (this.status != 0) {
+                int x = getWidth() / 2;
+                int y = getHeight() / 2;
+                int r = getWidth() - 15;
                 if (this.status == 1) {
                     g.setColor(Color.WHITE);
-                    g.fillOval(x-(r/2), y-(r/2), r, r);
+                    g.fillOval(x - (r / 2), y - (r / 2), r, r);
                     g.setColor(Color.BLACK);
-                }
-                else {
+                } else {
                     g.setColor(Color.BLACK);
-                    g.fillOval(x-(r/2), y-(r/2), r, r);
+                    g.fillOval(x - (r / 2), y - (r / 2), r, r);
                     g.setColor(Color.WHITE);
                 }
-                g.fillOval(x-((r-2)/2), y-((r-2)/2), r - 2, r - 2);
+                g.fillOval(x - ((r - 2) / 2), y - ((r - 2) / 2), r - 2, r - 2);
             }
         }
+
 
         @Override
         public void actionPerformed(ActionEvent e) {
