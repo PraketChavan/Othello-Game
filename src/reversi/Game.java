@@ -2,7 +2,7 @@ package reversi;
 
 import javax.swing.*;
 
-public class Game {
+public class Game{
     JFrame[] arr = new JFrame[2];
     static int currentPlayer;
 
