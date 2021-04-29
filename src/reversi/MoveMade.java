@@ -18,6 +18,8 @@ public class MoveMade implements ActionListener {
 
     public boolean isValidMove(int xPos, int yPos, int player){return false;}
 
+
+
     public int findPiece(int xPos, int yPos, int player){
         int captured = 0;
         int orgX = xPos, orgY = yPos;
@@ -44,12 +46,14 @@ public class MoveMade implements ActionListener {
                     if (state.gameState[xPos][yPos] == 0 || (state.gameState[xPos][yPos] == player && !flag))
                         break;
 
-                    if (state.gameState[xPos][yPos] == player && flag)
-                        capturePieces(xPos, yPos, orgX, orgY, player);
+                    if (state.gameState[xPos][yPos] == player && flag) {
+                        captured += capturePieces(xPos, yPos, orgX, orgY, player);
+                        break;
+                    }
 
-                    if (state.gameState[xPos][yPos] != player)
+                    if (state.gameState[xPos][yPos] != player) {
                         flag = true;
-                    captured++;
+                    }
                 }
             }
         }
@@ -65,13 +69,18 @@ public class MoveMade implements ActionListener {
      * @param xOp x position of the piece to capture to
      * @param yOp y position of the piece to capture to
      * @param player the player capturing the pieces
+     *
+     * @return returns the number of pieces that were captured
      */
-    private void capturePieces(int x, int y, int xOp, int yOp, int player){
+    private int capturePieces(int x, int y, int xOp, int yOp, int player){
+        int capturedPieces = 0; //Stores the number of pieces that were captured
+
         if (x - xOp == 0){
             while (y != yOp){
                 state.gameState[xOp][yOp] = player;
                 yOp -= (yOp-y)/Math.abs(yOp-y);
                 updateCell(xOp, yOp, player);
+                capturedPieces++;
             }
         }
         else if (y - yOp == 0){
@@ -79,7 +88,7 @@ public class MoveMade implements ActionListener {
                 state.gameState[xOp][yOp] = player;
                 xOp -= (xOp-x)/Math.abs(xOp-x);
                 updateCell(xOp, yOp, player);
-
+                capturedPieces++;
             }
 
         }
@@ -89,10 +98,11 @@ public class MoveMade implements ActionListener {
                 xOp -= (xOp-x)/Math.abs(xOp-x);
                 yOp -= (yOp-y)/Math.abs(yOp-y);
                 updateCell(xOp, yOp, player);
-
+                capturedPieces++;
             }
-
         }
+
+        return capturedPieces;
     }
 
     public boolean isMovePossible(int player){
@@ -124,6 +134,7 @@ public class MoveMade implements ActionListener {
             cell.update(Game.currentPlayer);
             GUI.state.update(cell.getxPos(), cell.getyPos(), Game.currentPlayer);
             this.findPiece(cell.getxPos(), cell.getyPos(), Game.currentPlayer);
+            GUI.state.updateCaptureState();
             GUI.state.print();
             cell.getGUI().updateFrame(cell.getyPos(), cell.getxPos(), Game.currentPlayer);
             Game.currentPlayer = Game.currentPlayer == 1 ? -1 : 1;
