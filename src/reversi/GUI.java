@@ -13,7 +13,8 @@ public class GUI {
     JFrame player1Frame, player2Frame;
 
     JFrame[] arr = new JFrame[2];
-    JPanel player1Panel, player2Panel, title1, title2;
+    JPanel player1Panel, player2Panel;
+    JLabel  title1, title2;
     JButton greedyAI1, greedyAI2;
     GameCell[][] player1Label = new GameCell[8][8];
     GameCell[][] player2Label = new GameCell[8][8];
@@ -25,6 +26,8 @@ public class GUI {
     public GUI() {
         player1Frame = new JFrame("Player 1");
         player2Frame = new JFrame("Player 2");
+        title1 = new JLabel();
+        title2 = new JLabel();
         initialise(player1Frame, player1Panel, title1, greedyAI1, player1Label, 1);
         initialise(player2Frame, player2Panel, title2, greedyAI2, player2Label, -1);
         currentGUI = this;
@@ -41,9 +44,8 @@ public class GUI {
      * @param AI     the button which will allow the user to let the AI play the move
      * @param labels the array that will hold the references to the GameCell objects
      */
-    private void initialise(JFrame frame, JPanel panel, JPanel title, JButton AI, GameCell[][] labels, int player) {
+    private void initialise(JFrame frame, JPanel panel, JLabel title, JButton AI, GameCell[][] labels, int player) {
         panel = new JPanel();
-        title = new JPanel();
         AI = new JButton("Greedy AI");
 
         //setting up the main frame
@@ -53,10 +55,18 @@ public class GUI {
         frame.getContentPane().add(title, BorderLayout.NORTH);
         frame.getContentPane().add(AI, BorderLayout.SOUTH);
 
+
         //setting up the panels
-        title.setLayout(new FlowLayout());
         panel.setLayout(new GridLayout(8, 8));
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        //setting up the title
+        if (player == 1)
+            title.setText("White Player - click place to put piece");
+        else
+            title.setText("Black Player - not your turn yet");
+
+
 
         //setting up (initialising) the  the GameCell array
         for (int i = 0; i < 8; i++) {
@@ -105,9 +115,13 @@ public class GUI {
      */
     public void updateFrame(int yPos, int xPos, int newStatus) {
         if (newStatus == 1) {
+            title1.setText("White Player - not your turn yet");
+            title2.setText("Black Player - click place to put piece");
             player1Label[xPos][yPos].update(newStatus);
             player2Label[7 - xPos][7 - yPos].update(newStatus);
         } else {
+            title1.setText("White Player - click place to put piece");
+            title2.setText("Black Player - not your turn yet");
             player2Label[7 - xPos][7 - yPos].update(newStatus);
             player1Label[xPos][yPos].update(newStatus);
         }
@@ -151,13 +165,47 @@ public class GUI {
             this.setPreferredSize(new Dimension(40, 40));
             this.setBackground(Color.green);
             this.setOpaque(true);
-            this.status = 0;
-            this.addActionListener(new MoveMade());
+            this.status = state.gameState[xPos][yPos];
+            this.addActionListener(new MoveMade(state));
         }
 
+        /**
+         * returns the GUI object that the cell is associated to
+         * @return the current GUI object
+         */
         public GUI getGUI() {
             return currentGUI;
         }
+
+        public int getxPos(){
+            return this.xPos;
+        }
+
+        public int getyPos(){
+            return this.yPos;
+        }
+
+        /**
+         * Gets the GameCell with the (x, y) co-ordinate
+         * @param xPos x position of the GameCell to get
+         * @param yPos y position of the GameCell to get
+         * @return the GameCell if found else null
+         */
+        public GameCell[] getGameCell(int xPos, int yPos) {
+            GameCell cell[] = new GameCell[2];
+            for (int i = 0; i < 8; i++){
+                for (int j = 0; j < 8; j++) {
+                    if (player1Label[i][j].getxPos() == xPos && player1Label[i][j].getyPos() == yPos)
+                        cell[0] = player1Label[i][j];
+
+                    if (player2Label[i][j].getxPos() == xPos && player2Label[i][j].getyPos() == yPos)
+                        cell[1] = player2Label[i][j];
+                }
+            }
+            return cell;
+        }
+
+
 
         /**
          * Updates this when a move is made to reflect the same
@@ -178,7 +226,7 @@ public class GUI {
                 int x = getWidth() / 2;
                 int y = getHeight() / 2;
                 int r = getWidth() - 15;
-                if (this.status == 1) {
+                if (this.status == -1) {
                     g.setColor(Color.WHITE);
                     g.fillOval(x - (r / 2), y - (r / 2), r, r);
                     g.setColor(Color.BLACK);

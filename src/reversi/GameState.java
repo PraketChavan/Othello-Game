@@ -18,6 +18,13 @@ public class GameState {
         return;
     }
 
+    public GameState(){
+        gameState[3][3] = -1;
+        gameState[3][4] = 1;
+        gameState[4][3] = 1;
+        gameState[4][4] = -1;
+    }
+
     /**
      * Prints the current board onto the stdout
      * Mostly used for debugging
