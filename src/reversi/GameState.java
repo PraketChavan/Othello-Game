@@ -87,7 +87,7 @@ public class GameState {
                         break;
 
                     if (gameState[xPos][yPos] == player && flag) {
-                        gameCaptureState[i][j][player==-1?0:1] = capturePieces(i, j, xPos, yPos, player);
+                        gameCaptureState[i][j][player==-1?0:1] = countPieces(i, j, xPos, yPos, player);
                         break;
                     }
 
@@ -99,8 +99,9 @@ public class GameState {
         }
     }
 
-    private int capturePieces(int i, int j, int iPos, int jPos, int player) {
-        int capturedPieces = 0; //Stores the number of pieces that were captured
+    //change name to count pieces
+    private int countPieces(int i, int j, int iPos, int jPos, int player) {
+        int capturedPieces = 0; //Stores the number of pieces that will be captured
 
         if (i - iPos == 0){
             while (j != jPos){
