@@ -18,10 +18,10 @@ public class GUI {
     JButton greedyAI1, greedyAI2;
     GameCell[][] player1Label = new GameCell[8][8];
     GameCell[][] player2Label = new GameCell[8][8];
-    static GameState state = new GameState();
+    GameState state = new GameState();
 
     //Stores the only GUI object;
-    static GUI currentGUI;
+    GUI currentGUI;
 
     public GUI() {
         player1Frame = new JFrame("Player 1");
@@ -49,12 +49,13 @@ public class GUI {
         AI = new JButton("Greedy AI");
 
         //setting up the main frame
-        frame.setDefaultCloseOperation(3);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false);
         frame.setLayout(new BorderLayout());
         frame.getContentPane().add(panel, BorderLayout.CENTER);
         frame.getContentPane().add(title, BorderLayout.NORTH);
         frame.getContentPane().add(AI, BorderLayout.SOUTH);
-
+        frame.setLocation(player==1 ? 435: 765, 200);
 
         //setting up the panels
         panel.setLayout(new GridLayout(8, 8));
@@ -82,7 +83,7 @@ public class GUI {
         //width and position
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (i == 0)
+                if (i == 0 && j != 7)
                     labels[i][j].setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.black));
                 else if (j == 7 && i == 0)
                     labels[i][j].setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, Color.black));
@@ -100,8 +101,7 @@ public class GUI {
 
     //returns a array of the main frames
     public JFrame[] getFrames() {
-        JFrame[] arr = {player1Frame, player2Frame};
-        return arr;
+        return new JFrame[]{player1Frame, player2Frame};
     }
 
     /**
@@ -131,6 +131,8 @@ public class GUI {
 
     }
 
+
+
     /**
      * Inner class for the cells of the game
      */
@@ -151,6 +153,11 @@ public class GUI {
          */
         int frame;
         int xPos, yPos;
+
+        /**
+         * The number of pieces that will be captured in this cell
+         */
+        int score;
 
         /**
          * The parameterised constructor which initialises the GameCell
@@ -216,26 +223,48 @@ public class GUI {
             if (status != newStatus) {
                 this.status = newStatus;
                 this.paintComponent(getGraphics());
+
             }
+            this.score = state.gameCaptureState[yPos][xPos][frame==1?1:0];
         }
 
         @Override
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
+            if (Game.currentPlayer == -1) {
+                title1.setText("White Player - not your turn yet");
+                title2.setText("Black Player - click place to put piece");
+            } else {
+                title1.setText("White Player - click place to put piece");
+                title2.setText("Black Player - not your turn yet");
+            }
+            this.score = state.searchForPieces(this.getxPos(), this.getyPos(), this.frame, false);
             if (this.status != 0) {
                 int x = getWidth() / 2;
                 int y = getHeight() / 2;
                 int r = getWidth() - 15;
                 if (this.status == -1) {
-                    g.setColor(Color.WHITE);
-                    g.fillOval(x - (r / 2), y - (r / 2), r, r);
-                    g.setColor(Color.BLACK);
+                      this.setBackground(Color.white);
+//                    g.setColor(Color.WHITE);
+//                    g.fillOval(x - (r / 2), y - (r / 2), r, r);
+//                    g.setColor(Color.BLACK);
                 } else {
-                    g.setColor(Color.BLACK);
-                    g.fillOval(x - (r / 2), y - (r / 2), r, r);
-                    g.setColor(Color.WHITE);
+                    this.setBackground(Color.orange);
+//                    g.setColor(Color.BLACK);
+//                    g.fillOval(x - (r / 2), y - (r / 2), r, r);
+//                    g.setColor(Color.WHITE);
                 }
-                g.fillOval(x - ((r - 2) / 2), y - ((r - 2) / 2), r - 2, r - 2);
+               // g.fillOval(x - ((r - 2) / 2), y - ((r - 2) / 2), r - 2, r - 2);
+            }
+            this.setText("" + score);
+        }
+
+        public void updateAllCells(){
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    player1Label[i][j].update(state.gameState[i][j]);
+                    player2Label[7 - i][7 - j].update(state.gameState[i][j]);
+                }
             }
         }
 
@@ -245,7 +274,7 @@ public class GUI {
             if (frame == Game.currentPlayer) {
                 this.update(Game.currentPlayer);
                 state.update(xPos, yPos, Game.currentPlayer);
-                state.print();
+                //state.print();
                 updateFrame(yPos, xPos, Game.currentPlayer);
                 Game.currentPlayer = Game.currentPlayer == 1 ? -1 : 1;
             }

@@ -18,11 +18,12 @@ public class GameState {
 
     /**
      * Method to update the gameState when a  move is made
-     * @param x the x position of the play
-     * @param y the y position of the play
+     *
+     * @param x      the x position of the play
+     * @param y      the y position of the play
      * @param player the current player that is playing
      */
-    public void update (int x, int y, int player){
+    public void update(int x, int y, int player) {
         gameState[x][y] = player;
         return;
     }
@@ -31,41 +32,45 @@ public class GameState {
      * Default constructor to initialise the game
      * board according to the game requirement
      */
-    public GameState(){
-        gameState[3][3] = -1;
-        gameState[3][4] = 1;
-        gameState[4][3] = 1;
-        gameState[4][4] = -1;
+    public GameState() {
+        gameState[3][3] = 1;
+        gameState[3][4] = -1;
+        gameState[4][3] = -1;
+        gameState[4][4] = 1;
     }
 
     /**
      * Will search the neighbouring cells in the gameState
      * array
-     * @param x the i position of the cell to search around
-     * @param y the j position of the cell to search around
+     *
+     * @param x      the i position of the cell to search around
+     * @param y      the j position of the cell to search around
      * @param player the player which will be making the move
      * @return return true if the neighbouring cells contains at least
-     *         one opponent piece else false
+     * one opponent piece else false
      */
-    public boolean searchNeighbour(int x, int y, int player){
-        for (int i = -1; i <= 1 ; i++) {
+    public boolean searchNeighbour(int x, int y, int player) {
+        if (gameState[x][y] != 0)
+            return false;
+        for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if (i == 0 && j == 0)
                     continue;
                 if (x + i >= 8 || x + i < 0 || y + j >= 8 || y + j < 0)
                     continue;
-                if (gameState[x + i][y + j] != player && gameState[x + i][y + j] != 0 && gameState[x][y] == 0)
+                if (gameState[x + i][y + j] != player && gameState[x + i][y + j] != 0)
                     return true;
             }
         }
-            return false;
+        return false;
     }
 
-    public void searchForPieces(int i, int j, int player){
+    public int searchForPieces(int i, int j, int player, boolean capture) {
         boolean flag;
+        int captured = 0;
         int xPos, yPos;
         for (int ioffset = -1; ioffset < 2; ioffset++) {
-            for (int joffset = -1; joffset < 2 ; joffset++) {
+            for (int joffset = -1; joffset < 2; joffset++) {
                 if (ioffset == 0 && joffset == 0)
                     continue;
 
@@ -73,7 +78,7 @@ public class GameState {
                 xPos = i;
                 yPos = j;
 
-                while(true) {
+                while (true) {
                     //adds the offset to the current position
                     xPos += ioffset;
                     yPos += joffset;
@@ -87,7 +92,7 @@ public class GameState {
                         break;
 
                     if (gameState[xPos][yPos] == player && flag) {
-                        gameCaptureState[i][j][player==-1?0:1] = countPieces(i, j, xPos, yPos, player);
+                        captured += countPieces(i, j, xPos, yPos, player, capture);
                         break;
                     }
 
@@ -97,35 +102,55 @@ public class GameState {
                 }
             }
         }
+        gameCaptureState[i][j][player == -1 ? 0 : 1] = captured;
+
+        return captured;
     }
 
-    //change name to count pieces
-    private int countPieces(int i, int j, int iPos, int jPos, int player) {
+    /**
+     * Utility function to count the number of pieces that will be captured
+     * by the player from i, j till iPos, jPos
+     *
+     * @param i      the i index of the move to be / made
+     * @param j      the j index of the move to be / made
+     * @param iPos   the i index of the pieces to capture to
+     * @param jPos   the j index of the pieces to capture to
+     * @param player the current player playing the move
+     * @param flag   set this to be true if you want the gameState to be changed
+     *               set this to false if you want to just count the number of pieces that will be captured
+     * @return the count of how many pieces were / will be captured
+     */
+    public int countPieces(int i, int j, int iPos, int jPos, int player, boolean flag) {
         int capturedPieces = 0; //Stores the number of pieces that will be captured
 
-        if (i - iPos == 0){
-            while (j != jPos){
-                //gameState[iPos][jPos] = player;
-                jPos -= (jPos-j)/Math.abs(jPos-j);
-                capturedPieces++;
-            }
-        }
-        else if (j - jPos == 0){
-            while (i != iPos){
-               // gameState[iPos][jPos] = player;
-                iPos -= (iPos-i)/Math.abs(iPos-i);
-                capturedPieces++;
-            }
+        if (flag) {
+            if (i - iPos == 0) {
+                while (j != jPos) {
+                    gameState[iPos][jPos] = player;
+                    jPos -= (jPos - j) / Math.abs(jPos - j);
+                    capturedPieces++;
+                }
+            } else if (j - jPos == 0) {
+                while (i != iPos) {
+                    gameState[iPos][jPos] = player;
+                    iPos -= (iPos - i) / Math.abs(iPos - i);
+                    capturedPieces++;
+                }
 
-        }
-        else {
-            while (i != iPos && j != jPos){
-                iPos -= (iPos-i)/Math.abs(iPos-i);
-                jPos -= (jPos-j)/Math.abs(jPos-j);
-                capturedPieces++;
+            } else {
+                while (i != iPos && j != jPos) {
+                    gameState[iPos][jPos] = player;
+                    iPos -= (iPos - i) / Math.abs(iPos - i);
+                    jPos -= (jPos - j) / Math.abs(jPos - j);
+                    capturedPieces++;
+                }
             }
+        } else {
+            if (i == iPos)
+                capturedPieces = Math.abs(j - jPos);
+            else
+                capturedPieces = Math.abs(i - iPos);
         }
-
         return capturedPieces - 1;
     }
 
@@ -133,49 +158,63 @@ public class GameState {
      * Updates the gameCaptureState array to reflect the current status
      * of the game board.
      */
-    public void updateCaptureState(){
+    public void updateCaptureState () {
         for (int k = -1; k <= 1; k += 2) {
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
                     if (searchNeighbour(i, j, k))
-                        searchForPieces(i, j, k);
+                        searchForPieces(i, j, k, false);
                     else
-                        gameCaptureState[i][j][k==-1?0:1] = 0;
+                        gameCaptureState[i][j][k == -1 ? 0 : 1] = 0;
                 }
             }
         }
     }
 
-    public static void main(String[] args){
-        GameState ob = new GameState();
-        ob.updateCaptureState();
-        ob.print();
-        ob.gameState[2][4] = 1;
-        ob.updateCaptureState();
-        ob.print();
+    public boolean skipMove(int player){
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (gameCaptureState[i][j][player==-1?0:1] != 0)
+                    return false;
+            }
+        }
+
+        return true;
     }
+
+//    public static void main (String[]args){
+//        GameState ob = new GameState();
+//        ob.updateCaptureState();
+//        ob.print();
+//        ob.gameState[2][4] = 1;
+//        ob.updateCaptureState();
+//        ob.print();
+//    }
 
     /**
      * Prints the current board onto the stdout
      * Mostly used for debugging
      */
-    public void print() {
+    public void print (GUI.GameCell cell) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++)
                 System.out.print(gameState[i][j] + "\t");
             System.out.print("\t\t\t");
 
             for (int j = 0; j < 8; j++)
-                System.out.print(gameCaptureState[i][j][0] + "\t");
-                System.out.print("\t\t\t");
+                System.out.print(gameCaptureState[7 - i][7 - j][0] + "\t");
+            System.out.print("\t\t\t");
 
             for (int j = 0; j < 8; j++)
-                System.out.print(gameCaptureState[i][j][1] +"\t");
+                System.out.print(gameCaptureState[i][j][1] + "\t");
+
+
 
             System.out.println();
         }
+        System.out.println("\t\t\t " + cell.score);
         System.out.println();
     }
-
-
 }
+
+
