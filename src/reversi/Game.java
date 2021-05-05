@@ -8,6 +8,7 @@ public class Game{
     static int currentPlayer;
     GUI ob;
     boolean restart;
+    GameState state;
 
     public Game() {
         restart = true;
@@ -19,7 +20,7 @@ public class Game{
             }
             if (ob.state.skipMove(Game.currentPlayer) && ob.state.skipMove(Game.currentPlayer == 1 ? -1 : 1)) {
                 JOptionPane optionPane = new JOptionPane();
-                optionPane.showMessageDialog(arr[0], "no more moves pososible");
+                optionPane.showMessageDialog(arr[0], state.countPieces());
                 restart = true;
                 arr[0].dispose();
                 arr[1].dispose();
@@ -32,6 +33,10 @@ public class Game{
         this.currentPlayer = 1;
         ob = new GUI();
         arr = ob.getFrames();
-        new Board(arr[0], arr[1]);
+       // new Board(arr[0], arr[1]);
+        state = ob.getGameState();
+        for (JFrame frame : arr) {
+            System.out.println(frame.toString());
+        }
     }
 }

@@ -37,6 +37,7 @@ public class GameState {
         gameState[3][4] = -1;
         gameState[4][3] = -1;
         gameState[4][4] = 1;
+        updateCaptureState();
     }
 
     /**
@@ -171,6 +172,23 @@ public class GameState {
         }
     }
 
+    public String countPieces(){
+        int white = 0;
+        int black = 0;
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (gameState[i][j] == 1)
+                    white++;
+                else if (gameState[i][j] == -1)
+                    black++;
+            }
+        }
+        if (black > white)
+            return "Black Wins: "+white+":"+black;
+        else
+            return "White Wins: "+white+":"+black;
+    }
+
     public boolean skipMove(int player){
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -181,15 +199,6 @@ public class GameState {
 
         return true;
     }
-
-//    public static void main (String[]args){
-//        GameState ob = new GameState();
-//        ob.updateCaptureState();
-//        ob.print();
-//        ob.gameState[2][4] = 1;
-//        ob.updateCaptureState();
-//        ob.print();
-//    }
 
     /**
      * Prints the current board onto the stdout

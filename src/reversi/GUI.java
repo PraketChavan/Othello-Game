@@ -28,9 +28,10 @@ public class GUI {
         player2Frame = new JFrame("Player 2");
         title1 = new JLabel();
         title2 = new JLabel();
+        currentGUI = this;
         initialise(player1Frame, player1Panel, title1, greedyAI1, player1Label, 1);
         initialise(player2Frame, player2Panel, title2, greedyAI2, player2Label, -1);
-        currentGUI = this;
+
     }
 
 
@@ -46,7 +47,8 @@ public class GUI {
      */
     private void initialise(JFrame frame, JPanel panel, JLabel title, JButton AI, GameCell[][] labels, int player) {
         panel = new JPanel();
-        AI = new JButton("Greedy AI");
+        AI = new JButton("Greedy AI ("+(player==1?"White":"Black") +")" );
+        AI.addActionListener(new AiButtonPressed(currentGUI));
 
         //setting up the main frame
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -103,6 +105,8 @@ public class GUI {
     public JFrame[] getFrames() {
         return new JFrame[]{player1Frame, player2Frame};
     }
+
+    public GameState getGameState() {return this.state;}
 
     /**
      * Updates both of the main frames and the (x, y) co-ordinate
@@ -225,7 +229,7 @@ public class GUI {
                 this.paintComponent(getGraphics());
 
             }
-            this.score = state.gameCaptureState[yPos][xPos][frame==1?1:0];
+            this.score = state.gameCaptureState[xPos][yPos][frame==1?1:0];
         }
 
         @Override
@@ -238,25 +242,23 @@ public class GUI {
                 title1.setText("White Player - click place to put piece");
                 title2.setText("Black Player - not your turn yet");
             }
-            this.score = state.searchForPieces(this.getxPos(), this.getyPos(), this.frame, false);
+            this.score = state.gameCaptureState[xPos][yPos][frame==1?1:0];
             if (this.status != 0) {
                 int x = getWidth() / 2;
                 int y = getHeight() / 2;
                 int r = getWidth() - 15;
                 if (this.status == -1) {
-                      this.setBackground(Color.white);
-//                    g.setColor(Color.WHITE);
-//                    g.fillOval(x - (r / 2), y - (r / 2), r, r);
-//                    g.setColor(Color.BLACK);
+                    g.setColor(Color.WHITE);
+                    g.fillOval(x - (r / 2), y - (r / 2), r, r);
+                    g.setColor(Color.BLACK);
                 } else {
-                    this.setBackground(Color.orange);
-//                    g.setColor(Color.BLACK);
-//                    g.fillOval(x - (r / 2), y - (r / 2), r, r);
-//                    g.setColor(Color.WHITE);
+                    g.setColor(Color.BLACK);
+                    g.fillOval(x - (r / 2), y - (r / 2), r, r);
+                    g.setColor(Color.WHITE);
                 }
-               // g.fillOval(x - ((r - 2) / 2), y - ((r - 2) / 2), r - 2, r - 2);
+                g.fillOval(x - ((r - 2) / 2), y - ((r - 2) / 2), r - 2, r - 2);
             }
-            this.setText("" + score);
+            //this.setText("" + score);
         }
 
         public void updateAllCells(){
