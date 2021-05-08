@@ -185,6 +185,8 @@ public class GameState {
         }
         if (black > white)
             return "Black Wins: "+white+":"+black;
+        else if (black == white)
+            return "Draw: "+white+":"+black;
         else
             return "White Wins: "+white+":"+black;
     }
