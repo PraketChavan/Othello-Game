@@ -66,6 +66,17 @@ public class GameState {
         return false;
     }
 
+    /**
+     * Search in 8 direction and returns the total number of pieces that will be captured
+     * by plauing in that cell
+     * @param i i index of the cell
+     * @param j j index of the cell
+     * @param player the player making the move
+     * @param capture flag to indicate whether or not to update the
+     *                gameState with the move made. If false the fucntion will just
+     *                return without updating the board or the cells
+     * @return the total number of pieces that will be captured.
+     */
     public int searchForPieces(int i, int j, int player, boolean capture) {
         boolean flag;
         int captured = 0;
@@ -172,6 +183,12 @@ public class GameState {
         }
     }
 
+    /**
+     * Counts the number of cells of each player and return the appropriate
+     * message
+     * @return the String containing the information of the winner and the number of pieces
+     *          of each player
+     */
     public String countPieces(){
         int white = 0;
         int black = 0;
@@ -191,6 +208,12 @@ public class GameState {
             return "White Wins: "+white+":"+black;
     }
 
+    /**
+     * Checks the gameCaptureState of the respective player to see if
+     * the player has any valid moves available
+     * @param player the player making the move
+     * @return false if there is a move else true
+     */
     public boolean skipMove(int player){
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -203,10 +226,10 @@ public class GameState {
     }
 
     /**
-     * Prints the current board onto the stdout
+     * Prints the gameState and the gameCaptureState onto the stdout
      * Mostly used for debugging
      */
-    public void print (GUI.GameCell cell) {
+    public void print () {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++)
                 System.out.print(gameState[i][j] + "\t");
@@ -219,12 +242,8 @@ public class GameState {
             for (int j = 0; j < 8; j++)
                 System.out.print(gameCaptureState[i][j][1] + "\t");
 
-
-
             System.out.println();
         }
-        System.out.println("\t\t\t " + cell.score);
-        System.out.println();
     }
 }
 

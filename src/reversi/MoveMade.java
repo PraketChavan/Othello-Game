@@ -13,23 +13,28 @@ public class MoveMade implements ActionListener {
     private GameState state;
     private GUI.GameCell cell;
 
+
     public MoveMade(GameState state){
         this.state = state;
     }
 
+    /**
+     * Checks to see if the current move is possible
+     * i.e if it is a legal move
+     *
+     * @return true if yes else false
+     */
     public boolean isMovePossible(){
         if (cell.score == 0)
             return false;
         return true;
     }
 
-    public void updateCell(int x, int y, int player){
-        GUI.GameCell cell[];
-        cell = this.cell.getGameCell(x, y);
-        cell[0].update(player);
-        cell[1].update(player);
-    }
-
+    /**
+     * Updates the gameState, gameCaptureState and the cells when the move made
+     * is legal and the move is made by the current player.
+     * @param e
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         this.cell = (GUI.GameCell)e.getSource();
@@ -41,7 +46,7 @@ public class MoveMade implements ActionListener {
             state.updateCaptureState();
             cell.getGUI().updateFrame(cell.getyPos(), cell.getxPos(), Game.currentPlayer);
             cell.updateAllCells();
-            state.print(this.cell);
+            state.print();
             Game.currentPlayer = Game.currentPlayer == 1 ? -1 : 1;
         }
     }

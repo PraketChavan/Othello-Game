@@ -20,6 +20,7 @@ public class GUI {
     //Stores the only GUI object;
     GUI currentGUI;
 
+
     public GUI() {
         player1Frame = new JFrame("Player 1");
         player2Frame = new JFrame("Player 2");
@@ -103,6 +104,11 @@ public class GUI {
         return new JFrame[]{player1Frame, player2Frame};
     }
 
+    /**
+     * Returns the current gameState object associated with
+     * the current GUI
+     * @return the current gameState object
+     */
     public GameState getGameState() {return this.state;}
 
     /**
@@ -229,6 +235,11 @@ public class GUI {
             this.score = state.gameCaptureState[xPos][yPos][frame==1?1:0];
         }
 
+        /**
+         * Paints the cell to have white or black token depending on the
+         * status of the cell. It also updates the title object of each frame to
+         * say whos turn it is.
+         */
         @Override
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -255,9 +266,13 @@ public class GUI {
                 }
                 g.fillOval(x - ((r - 2) / 2), y - ((r - 2) / 2), r - 2, r - 2);
             }
-            //this.setText("" + score);
         }
 
+        /**
+         * Traverses through the GameCell arrays for both players
+         * and updates all of them to reflect the changes made by the
+         * move
+         */
         public void updateAllCells(){
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {

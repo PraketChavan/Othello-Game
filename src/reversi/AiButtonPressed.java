@@ -3,6 +3,9 @@ package reversi;
 import javax.swing.*;
 import java.awt.event.*;
 
+/**
+ * Handles the logic for the Greedy AI
+ */
 public class AiButtonPressed implements ActionListener {
 
     GUI gui;
@@ -11,6 +14,13 @@ public class AiButtonPressed implements ActionListener {
         this.gui = gui;
     }
 
+    /**
+     * Searches the gameState to find the move where
+     * the highest number of cell will be captured.
+     *
+     * @param player the current player
+     * @return in array containing the i, j indexes of the move.
+     */
     private int[] searchCaptureState(int player){
         int maxPos[] = new int[2];
         int max = 0;
@@ -25,6 +35,7 @@ public class AiButtonPressed implements ActionListener {
         }
         return maxPos;
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         JButton button = (JButton)e.getSource();
