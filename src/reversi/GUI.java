@@ -1,7 +1,6 @@
 package reversi;
 
 import javax.swing.*;
-import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -11,8 +10,6 @@ import java.awt.event.*;
  */
 public class GUI {
     JFrame player1Frame, player2Frame;
-
-    JFrame[] arr = new JFrame[2];
     JPanel player1Panel, player2Panel;
     JLabel  title1, title2;
     JButton greedyAI1, greedyAI2;
@@ -203,7 +200,7 @@ public class GUI {
          * @return the GameCell if found else null
          */
         public GameCell[] getGameCell(int xPos, int yPos) {
-            GameCell cell[] = new GameCell[2];
+            GameCell[] cell = new GameCell[2];
             for (int i = 0; i < 8; i++){
                 for (int j = 0; j < 8; j++) {
                     if (player1Label[i][j].getxPos() == xPos && player1Label[i][j].getyPos() == yPos)
